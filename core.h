@@ -1,13 +1,10 @@
 #ifndef MARKETING4C_CORE_H
 #define MARKETING4C_CORE_H
 
-#define SYSTEM_NAME Marketing4C
-
 /* 自定义的 Boolean 实现，用于提高结构化 */
 #define bool int
 #define true 1
 #define false 0
-#define asBool(x) !!x
 
 /* 引入常用的头文件 */
 #include <stdio.h>
@@ -33,13 +30,10 @@ typedef struct linker {
     struct linker *next;
 } Linker;
 
-Linker * linkedlist_endpoint(Linker *head);
 void linkedlist_add(Linker *head, void *entry);
 void linkedlist_foreach(Linker *head, void (*each)(void *));
-void * linkedlist_search(Linker *head, bool (*filter)(void *));
 bool linkedlist_delete(Linker *head, void *entry);
 int linkedlist_size(Linker *head);
-void * linkedlist_get(Linker *head, int index);
 
 /**
  * 链表的插入排序

@@ -22,16 +22,6 @@ bool initPassword() {
     return false;
 }
 
-/**
- * 是否为合法的密码
- * @param password 密码
- * @return 合法返回 true
- */
-bool isValidPassword(const char *password) {
-    size_t len = strlen(password);
-    return len > 6 && len < 20;
-}
-
 void setPassword(const char *input) {
     char *new = calloc(20, sizeof(char));
     strcpy(new, input);

@@ -5,8 +5,10 @@
 #ifndef MARKETING4C_CONTROLLER_H
 #define MARKETING4C_CONTROLLER_H
 
-#include "components/login.h"
+#include "definition/login.h"
 #include "definition/category.h"
+#include "definition/goods.h"
+#include "definition/order.h"
 
 /**
  * 登录的业务逻辑

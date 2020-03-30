@@ -25,12 +25,6 @@ char *CURRENT_PASSWORD;
 bool initPassword();
 
 /**
- * 检查密码是否正确
- * @return 是否正确
- */
-bool checkPassword(const char *);
-
-/**
  * 重置密码
  * @param input 新密码
  */
