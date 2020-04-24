@@ -42,33 +42,39 @@ LIST list_create();
 
 /**
  * 链表的插入排序
+ * @param order 用于对比的函数指针，返回 true 表示两个元素已按先后顺序排好
  */
 LIST list_folkInOrder(Linker *head, bool (*order)(void*, void*));
 
 /* 用于链表的循环 */
-#define FOREACH(LIST_HEAD, TYPE, VAR, BODY) LIST __cfee__##VAR = LIST_HEAD->next; \
-while(__cfee__##VAR != NULL) { \
-TYPE VAR = __cfee__##VAR->entry; \
+#define FOREACH(LIST_HEAD, TYPE, VAR, BODY) {LIST __FOREACH__ELEMENT__ = LIST_HEAD->next; \
+while(__FOREACH__ELEMENT__ != NULL) { \
+TYPE VAR = __FOREACH__ELEMENT__->entry; \
 BODY; \
-__cfee__##VAR = __cfee__##VAR->next; \
-}
+__FOREACH__ELEMENT__ = __FOREACH__ELEMENT__->next; \
+}}
 
-
-#define REMOVE_IF(LIST_HEAD, TYPE, VAR, COMPARE) LIST RI_##VAR = LIST_HEAD->next; \
-LIST PREVIOUS_##VAR = LIST_HEAD; \
-while(RI_##VAR != NULL) { \
-    TYPE VAR = RI_##VAR->entry; \
+/**
+ * 删除链表中的数据
+ * @param TYPE 元素类型
+ * @param VAR 变量名
+ * @param COMPARE 对比表达式，返回 true 既删除
+ */
+#define REMOVE_IF(LIST_HEAD, TYPE, VAR, COMPARE) {LIST __REMOVEIF__ELEMENT__ = LIST_HEAD->next; \
+LIST __REMOVEIF__PREVIOUS__ = LIST_HEAD; \
+while(__REMOVEIF__ELEMENT__ != NULL) { \
+    TYPE VAR = __REMOVEIF__ELEMENT__->entry; \
     bool REMOVE = false;\
     COMPARE; \
     if (REMOVE) { \
-        PREVIOUS_##VAR->next = RI_##VAR->next; \
-        free(RI_##VAR); \
-        RI_##VAR = PREVIOUS_##VAR->next; \
+        __REMOVEIF__PREVIOUS__->next = __REMOVEIF__ELEMENT__->next; \
+        free(__REMOVEIF__ELEMENT__); \
+        __REMOVEIF__ELEMENT__ = __REMOVEIF__PREVIOUS__->next; \
         continue; \
     } \
-    PREVIOUS_##VAR = RI_##VAR; \
-    RI_##VAR = RI_##VAR->next; \
-}
+    __REMOVEIF__PREVIOUS__ = __REMOVEIF__ELEMENT__; \
+    __REMOVEIF__ELEMENT__ = __REMOVEIF__ELEMENT__->next; \
+}}
 
 
 #endif //MARKETING4C_CORE_H

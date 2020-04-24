@@ -69,3 +69,37 @@ void commandResetPassword() {
 
     setPassword(password);
 }
+
+void login() {
+    if (CURRENT_PASSWORD == NULL) {
+        char password[20];
+        for (;;) {
+            printf("↳ 初次使用请先设置密码：");
+            scanf("%s", password);
+            char confirmPassword[20];
+            printf("↳ 再次输入密码以确认：");
+            scanf("%s", confirmPassword);
+
+            if (strcmp(password, confirmPassword) == 0) {
+                printf("\n◉ 设置成功，已为你自动登录！\n");
+                break;
+            }
+
+            printf("× 两次输入的密码不一致，请重新输入！\n\n");
+        }
+
+        setPassword(password);
+    } else {
+        char password[20];
+        for (;;) {
+            printf("↳ 请输入密码登录：");
+            scanf("%s", password);
+
+            if (strcmp(password, CURRENT_PASSWORD) == 0) {
+                printf("\n◉ 登录成功！\n\n");
+                break;
+            }
+            printf("× 密码错误，请重新输入\n\n");
+        }
+    }
+}

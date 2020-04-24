@@ -30,6 +30,14 @@ bool initPassword();
  */
 void setPassword(const char *input);
 
+/**
+ * 开始登陆
+ */
+void login();
+
+/**
+ * 重置代码
+ */
 void commandResetPassword();
 
 #endif //MARKETING4C_LOGIN_H

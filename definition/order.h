@@ -38,6 +38,19 @@ void readAllOrdersFromFile();
  */
 void writeAllOrdersToFile();
 
+/**
+ * 输出订单信息
+ */
 void printOrder(Order *order);
+
+/**
+ * 销售商品
+ */
+void commandSell();
+
+/**
+ * 删除订单
+ */
+void commandDeleteOrder();
 
 #endif //MARKETING4C_ORDER_H

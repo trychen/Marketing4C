@@ -74,3 +74,39 @@ void printAllGoodsInIDOrder() {
 
     list_free(sorted);
 }
+
+
+void commandPrintGoods() {
+    int size = list_size(GOODS_LIST);
+
+    if (size == 0) {
+        printf("× 当前没有任何商品，请先创建！\n");
+        return;
+    }
+
+    printf("◉ 商品编号\t名称\n");
+    FOREACH(GOODS_LIST, Goods*, g, {
+        printf("| %s\t%s\n", g->id, g->name);
+    })
+    printf("\n");
+
+    printf("▧ 查询商品信息\n");
+    printf("↳ 请输入商品编号：");
+
+    char id[30];
+    scanf("%s", id);
+
+    // 查找商品
+    Goods *goods = findGoodsByID(id);
+
+    printf("\n");
+
+    if (goods == NULL) {
+        printf("× 你所查找的商品 %s 不存在！\n", id);
+        return;
+    }
+
+    // 输出商品信息
+    printGoods(goods);
+    printf("\n\n");
+}

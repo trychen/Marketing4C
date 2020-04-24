@@ -55,4 +55,9 @@ void printGoods(Goods *);
  */
 void printAllGoodsInIDOrder();
 
+/**
+ * 输出指定商品的信息
+ */
+void commandPrintGoods();
+
 #endif //MARKETING4C_GOODS_H

@@ -1,5 +1,6 @@
 //
-// Created by Trychen on 2020/3/13.
+// 该文件用于控制主要的业务流程
+// Created by 陈志林 on 2020/3/13.
 //
 
 #ifndef MARKETING4C_CONTROLLER_H
@@ -10,10 +11,6 @@
 #include "definition/goods.h"
 #include "definition/order.h"
 
-/**
- * 登录的业务逻辑
- */
-void login();
 
 /**
  * 打印帮助信息
@@ -34,15 +31,6 @@ void commandPrintGoodsInSalesOrder();
  * 销售商品
  */
 void commandSell();
-/**
- * 输出指定商品信息
- */
-void commandPrintGoods();
-
-/**
- * 删除订单
- */
-void commandDeleteOrder();
 
 /**
  * 按照类别输出订单信息
