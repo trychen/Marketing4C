@@ -3,7 +3,6 @@
 
 #include "../core.h"
 
-#include "order.h"
 #include "category.h"
 
 /**
@@ -16,9 +15,9 @@
  */
 typedef struct MarketGoods
 {
-    char* id; // 商品编号
+    char id[30]; // 商品编号
     int category; // 所属类别编号
-    char* name; // 商品名称
+    char name[30]; // 商品名称
     float price; // 库存量
     int stock; //单价
 
@@ -28,7 +27,7 @@ typedef struct MarketGoods
 /**
  * 存储商品信息的链表
  */
-Linker* GOODS_LIST;
+extern LIST GOODS_LIST;
 
 /**
  * 从文件中读取商品，并存入 {@see ALL_GOODS}
@@ -45,17 +44,6 @@ void writeAllGoodsToFile();
  * @return 对应的 Goods 的指针，不存在则为 NULL
  */
 Goods* findGoodsByID(const char*);
-
-/**
- * 根据 ID 删除对应商品
- * @return 商品不存在则返回 false
- */
-bool deleteGoodsByID(const char*);
-
-/**
- * 命令：打印商品信息
- */
-void commandPrintGoods();
 
 /**
  * 输出商品信息

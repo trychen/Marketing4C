@@ -8,51 +8,27 @@ void fixReturnNewline(char c[], int len) {
     }
 }
 
-Linker * linkedlist_endpoint(Linker *head) {
-    while(head != NULL) {
-        if (head->next == NULL)
-            return head;
-        head = head->next;
-    }
-    return head;
-}
-
-void linkedlist_add(Linker *head, void* add) {
+void list_add(LIST head, void* entry) {
     if (head->entry == NULL) {
-        head->entry = add;
+        head->entry = entry;
     } else {
-        Linker *end;
+        LIST end;
 
         while (head != NULL) {
             end = head;
             head = head->next;
         }
 
-        Linker *next = malloc(sizeof(Linker));
-        next->entry = add;
+        LIST next = malloc(sizeof(Linker));
+        next->entry = entry;
         next->next = NULL;
 
         end->next = next;
     }
 }
 
-void linkedlist_foreach(Linker *head, void (*func_each)(void *entry)) {
-    while(head != NULL) {
-        func_each(head->entry);
-        head = head->next;
-    }
-}
-
-void * linkedlist_search(Linker *head, bool (*func_filter)(void *entry)) {
-    while(head != NULL) {
-        if (func_filter(head->entry)) return head->entry;
-        head = head->next;
-    }
-    return NULL;
-}
-
-bool linkedlist_delete(Linker *head, void *entry) {
-    Linker* previous = head;
+bool list_delete(LIST head, void *entry) {
+    LIST previous = head;
     while(head != NULL) {
         if (head->entry == entry) {
             previous->next = head->next;
@@ -65,50 +41,42 @@ bool linkedlist_delete(Linker *head, void *entry) {
     return false;
 }
 
-int linkedlist_size(Linker *head) {
+int list_size(LIST head) {
     if (head == NULL) return 0;
     int size = 0;
-    while(head != NULL) {
-        size++;
-        head = head->next;
-    }
+    FOREACH(head, Linker*, h, size++)
     return size;
 }
 
-void * linkedlist_get(Linker *head, int index) {
-    int current = 0;
+void list_free(LIST head) {
     while(head != NULL) {
-        if (index == current) {
-            return head->entry;
-        }
-        current++;
+        free(head);
         head = head->next;
     }
-    return NULL;
 }
 
-Linker * linkedlist_folkInOrder(Linker *head, bool (*order)(void*, void*)) {
-    Linker *sorted = malloc(sizeof(Linker));
-    memset(sorted, 0, sizeof(Linker));
+LIST list_create() {
+    LIST list = malloc(sizeof(Linker));
+    list->next = list->entry = NULL;
+    return list;
+}
 
-    Linker *current = head;
+LIST list_folkInOrder(LIST head, bool (*order)(void*, void*)) {
+    LIST sorted = list_create();
 
-    while (current != NULL) {
-        if (sorted->entry == NULL) {
-            sorted->entry = current->entry;
-            current = current->next;
+    FOREACH(head, void*, current, {
+        Linker* add = list_create();
+        add->entry = current;
+
+        if (sorted->next == NULL) {
+            sorted->next = add;
             continue;
         }
 
-        Linker *add = malloc(sizeof(Linker));
-        add->entry = current->entry;
-        add->next = NULL;
-
-        Linker *aim = sorted;
-
+        Linker *aim = sorted->next;
         if (order(aim->entry, add->entry)) {
             add->next = aim;
-            sorted = add;
+            sorted->next = add;
         } else {
             while (aim->next != NULL && !order(aim->next->entry, add->entry)) {
                 aim = aim->next;
@@ -122,8 +90,7 @@ Linker * linkedlist_folkInOrder(Linker *head, bool (*order)(void*, void*)) {
                 add->next = next;
             }
         }
+    })
 
-        current = current->next;
-    }
     return sorted;
 }

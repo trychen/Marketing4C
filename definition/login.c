@@ -1,11 +1,13 @@
 #include "login.h"
 
+char * CURRENT_PASSWORD;
+
 bool initPassword() {
     char buf[MAX_LENGTH_PASSWORD];
     FILE *fp = fopen(PASSWORD_BIN_PATH,"r");
 
     if(fp == NULL) {
-        return false;
+        return true;
     }
 
     if (fgets(buf, MAX_LENGTH_PASSWORD, fp) != NULL) {
@@ -23,7 +25,7 @@ bool initPassword() {
 }
 
 void setPassword(const char *input) {
-    char *new = calloc(20, sizeof(char));
+    char *new = calloc(MAX_LENGTH_PASSWORD, sizeof(char));
     strcpy(new, input);
 
     FILE *fp = fopen(PASSWORD_BIN_PATH,"w");

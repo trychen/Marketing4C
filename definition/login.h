@@ -6,7 +6,7 @@
 /**
  * 最大密码长度
  */
-#define MAX_LENGTH_PASSWORD 20
+#define MAX_LENGTH_PASSWORD 128
 
 /**
  * 存储密码的文件路径
@@ -16,7 +16,7 @@
 /**
  * 当前缓存的密码
  */
-char *CURRENT_PASSWORD;
+extern char *CURRENT_PASSWORD;
 
 /**
  * 读取密码

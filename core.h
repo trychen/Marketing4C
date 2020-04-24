@@ -6,6 +6,8 @@
 #define true 1
 #define false 0
 
+#define LOOP for(;;)
+
 /* 引入常用的头文件 */
 #include <stdio.h>
 #include <stdlib.h>
@@ -30,14 +32,43 @@ typedef struct linker {
     struct linker *next;
 } Linker;
 
-void linkedlist_add(Linker *head, void *entry);
-void linkedlist_foreach(Linker *head, void (*each)(void *));
-bool linkedlist_delete(Linker *head, void *entry);
-int linkedlist_size(Linker *head);
+typedef Linker* LIST;
+
+void list_add(LIST head, void *entry);
+bool list_delete(LIST head, void *entry);
+int list_size(LIST head);
+void list_free(LIST head);
+LIST list_create();
 
 /**
  * 链表的插入排序
  */
-Linker * linkedlist_folkInOrder(Linker *head, bool (*order)(void*, void*));
+LIST list_folkInOrder(Linker *head, bool (*order)(void*, void*));
+
+/* 用于链表的循环 */
+#define FOREACH(LIST_HEAD, TYPE, VAR, BODY) LIST __cfee__##VAR = LIST_HEAD->next; \
+while(__cfee__##VAR != NULL) { \
+TYPE VAR = __cfee__##VAR->entry; \
+BODY; \
+__cfee__##VAR = __cfee__##VAR->next; \
+}
+
+
+#define REMOVE_IF(LIST_HEAD, TYPE, VAR, COMPARE) LIST RI_##VAR = LIST_HEAD->next; \
+LIST PREVIOUS_##VAR = LIST_HEAD; \
+while(RI_##VAR != NULL) { \
+    TYPE VAR = RI_##VAR->entry; \
+    bool REMOVE = false;\
+    COMPARE; \
+    if (REMOVE) { \
+        PREVIOUS_##VAR->next = RI_##VAR->next; \
+        free(RI_##VAR); \
+        RI_##VAR = PREVIOUS_##VAR->next; \
+        continue; \
+    } \
+    PREVIOUS_##VAR = RI_##VAR; \
+    RI_##VAR = RI_##VAR->next; \
+}
+
 
 #endif //MARKETING4C_CORE_H

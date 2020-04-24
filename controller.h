@@ -28,6 +28,25 @@ void command();
 /**
  * 按商品销售量排序
  */
-void printGoodsInSalesOrder();
+void commandPrintGoodsInSalesOrder();
+
+/**
+ * 销售商品
+ */
+void commandSell();
+/**
+ * 输出指定商品信息
+ */
+void commandPrintGoods();
+
+/**
+ * 删除订单
+ */
+void commandDeleteOrder();
+
+/**
+ * 按照类别输出订单信息
+ */
+void commandPrintOrderInCategory();
 
 #endif //MARKETING4C_CONTROLLER_H

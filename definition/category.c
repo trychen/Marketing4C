@@ -1,15 +1,9 @@
 #include "category.h"
 
 char * getCategoryDisplayNameByID(int id) {
-    Linker *current = CATEGORY_LIST;
-
-    while (current != NULL) {
-        Category *category = current->entry;
-
-        if (category->id == id) {
-            return category->name;
-        }
-    }
+    FOREACH(CATEGORY_LIST, Category*, cg, {
+        if (cg->id == id) return cg->name;
+    })
 
     return CATEGORY_NOT_DEFINED_DISPLAY_NAME;
 }
@@ -25,8 +19,8 @@ void readAllCategoryFromFile() {
         return;
     }
 
-    CATEGORY_LIST = malloc(sizeof(Linker));
-    memset(CATEGORY_LIST, 0, sizeof(Linker));
+    Linker *head = list_create();
+    Linker *node = head;
 
     char buf[128];
     while (fgets(buf, sizeof(buf), fp) != NULL) {
@@ -41,10 +35,22 @@ void readAllCategoryFromFile() {
         sscanf(buf, "%d %s", &cg->id, cg->name);
 
         // 添加数据到链表
-        linkedlist_add(CATEGORY_LIST, cg);
+        Linker *next = list_create();
+        next->entry = cg;
+        node->next = next;
+        node = next;
     }
 
+    CATEGORY_LIST = head;
     fclose(fp);
+}
+
+void printAllCategory() {
+    printf("◉ 类别编号\t名称\n");
+
+    FOREACH(CATEGORY_LIST, Category *, c, {
+        printf("| %d\t%s\n", c->id, c->name);
+    })
 }
 
 #pragma clang diagnostic pop

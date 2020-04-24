@@ -1,5 +1,4 @@
 #include "controller.h"
-#include "definition/goods.h"
 
 void login() {
     if (CURRENT_PASSWORD == NULL) {
@@ -76,15 +75,15 @@ void command() {
     } else if (id == 1) {
         printAllGoodsInIDOrder();
     } else if (id == 2) {
-
+        commandSell();
     } else if (id == 3) {
-
+        commandDeleteOrder();
     } else if (id == 4) {
-
+        commandPrintOrderInCategory();
     } else if (id == 5) {
 
     } else if (id == 6) {
-        printGoodsInSalesOrder();
+        commandPrintGoodsInSalesOrder();
     } else if (id == 7) {
         commandPrintGoods();
     } else if (id == 8) {
@@ -92,14 +91,49 @@ void command() {
     } else help();
 }
 
+void commandPrintGoods() {
+    int size = list_size(GOODS_LIST);
+
+    if (size == 0) {
+        printf("× 当前没有任何商品，请先创建！\n");
+        return;
+    }
+
+    printf("◉ 商品编号\t名称\n");
+    FOREACH(GOODS_LIST, Goods*, g, {
+        printf("| %s\t%s\n", g->id, g->name);
+    })
+    printf("\n");
+
+    printf("▧ 查询商品信息\n");
+    printf("↳ 请输入商品编号：");
+
+    char id[30];
+    scanf("%s", id);
+
+    // 查找商品
+    Goods *goods = findGoodsByID(id);
+
+    printf("\n");
+
+    if (goods == NULL) {
+        printf("× 你所查找的商品 %s 不存在！\n", id);
+        return;
+    }
+
+    // 输出商品信息
+    printGoods(goods);
+    printf("\n\n");
+}
+
 bool func_goods_inSalesOrder(Goods *a, Goods *b) {
     return a->sales >= b->sales;
 }
 
-void printGoodsInSalesOrder() {
+void commandPrintGoodsInSalesOrder() {
     printf("\n");
 
-    Linker* sortedHead = linkedlist_folkInOrder(GOODS_LIST, (int (*)(void *, void *)) func_goods_inSalesOrder);
+    Linker *sortedHead = list_folkInOrder(GOODS_LIST, (int (*)(void *, void *)) func_goods_inSalesOrder);
 
     printf("◉\t%s\t%s\t%s\t%s\t%s\n", "商品编号", "商品名称", "销售数量", "单价", "总金额");
     while (sortedHead != NULL) {
@@ -112,4 +146,143 @@ void printGoodsInSalesOrder() {
     }
 
     printf("\n");
+
+    list_free(sortedHead);
+}
+
+void commandSell() {
+    LIST orders = list_create();
+
+    LOOP {
+        printAllCategory();
+        printf("↳ 请输入你要购买的商品类别：");
+
+        int category_id;
+        scanf("%d", &category_id);
+
+        printf("\n");
+
+        if (category_id == -1) {
+            printf("\n");
+            return;
+        }
+
+        printf("◉ 该类别下所有商品如下:\n\n");
+
+        FOREACH(GOODS_LIST, Goods *, g, {
+            if (g->category == category_id) printf("  %s\t%s\n", g->id, g->name);
+        })
+
+        char goods_id[20];
+        printf("↳ 请输入购买的商品（输入 -1 重新选择类别）：");
+        scanf("%s", goods_id);
+
+        if (strcmp(goods_id, "-1") == 0) {
+            continue;
+        }
+
+        Goods *goods = findGoodsByID(goods_id);
+        if (goods == NULL) {
+            printf("× 商品不存在！\n\n");
+            continue;
+        }
+
+        printf("↳ 请输入购买的数量：");
+
+        int count;
+        scanf("%d", &count);
+        if (goods->stock < count) {  //goods[i].many表示为商品库存量
+            printf("× 抱歉，目前商品供货不足，仅有 %d 件,购买失败！\n\n", goods->stock);
+            continue;
+        }
+
+        goods->stock -= count; //更新库存量
+        goods->sales += count; //更新销售量
+
+        Order *order = malloc(sizeof(Order));
+        order->id = NEXT_ORDER_ID++;
+        order->count = count; //记录下购买的数量
+        order->price = goods->price; //记录下所购买商品的单价
+        order->total = goods->price * count; //记录下购买该商品所花费的总额
+
+        //记录下所购买的商品
+        strcpy(order->goods_id, goods->id);
+        strcpy(order->goods->name, goods->name);
+
+        list_add(orders, order);
+
+        printf("\n◉ 购买 %s 成功！\n", goods->name);
+
+        printf("↳ 输入 1 以继续购买，输入 -1 结束购买:");
+
+        int x;
+        scanf("%d", &x);
+
+        if (x == -1) break;
+    }
+
+    if (list_size(orders) != 0) {
+        printf("\n您成功购买的商品如下:\n");//
+        printf("商品名称\t购买数量\t商品单价\t所花费金额\n"); //输出所购买的商品的信息
+        printf("-------------------------------------------------------------------\n");
+
+        FOREACH(orders, Order *, order, {
+            printf("%s\t\t%d\t\t%.2f\t\t%.2f\n", order->goods->name, order->count, order->price, order->total);
+            orders = orders->next;
+        })
+
+        printf("-------------------------------------------------------------------\n\n");
+    }
+
+    list_free(orders);
+}
+
+void commandDeleteOrder() {
+    printf("◉ 订单编号\t商品\t数量\t总价\n");
+    FOREACH(ORDER_LIST, Order *, o, {
+        printOrder(o);
+    })
+    printf("↳ 请输入你要删除的订单编号：");
+
+    int id;
+    scanf("%d", &id);
+
+    bool deleted = false;
+
+    REMOVE_IF(ORDER_LIST, Order *, order, {
+        if (order->id == id) {
+            deleted = true;
+            free(order);
+            REMOVE = true;
+        }
+    })
+
+    if (deleted) {
+        printf("\n◉ 删除成功！\n\n");
+    } else {
+        printf("× 抱歉，没有找到编号为 %d 的订单！\n\n", id);
+    }
+}
+
+void commandPrintOrderInCategory() {
+    printAllCategory();
+
+    printf("↳ 请输入你要查询的类别：");
+
+    int id;
+    scanf("%d", &id);
+
+    char *cgName = getCategoryDisplayNameByID(id);
+    if (strcmp(cgName, CATEGORY_NOT_DEFINED_DISPLAY_NAME) == 0) {
+        printf("× 抱歉，没有找到类别 %d！\n\n", id);
+    }
+
+    printf("\n◉ 正在输出类别 %s 的订单：", cgName);
+    printf("◉ 订单号\t商品编号\t商品名称\t销售数量\t单价\t总金额\n");
+    FOREACH(ORDER_LIST, Order*, order, {
+        if (order->goods->category != id) continue;
+        printf("| %04d\t%s\t%s\t%d\t%f\t%f\n", order->id, order->goods_id, order->goods->name, order->count, order->price, order->total);
+    })
+
+    printf("\n\n");
 }
