@@ -28,6 +28,7 @@ typedef struct MarketGoods
  * 存储商品信息的链表
  */
 extern LIST GOODS_LIST;
+extern LIST GOODS_FILE_COMMENTS;
 
 /**
  * 从文件中读取商品，并存入 {@see ALL_GOODS}

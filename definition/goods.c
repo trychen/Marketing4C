@@ -1,6 +1,7 @@
 #include "goods.h"
 
 LIST GOODS_LIST;
+LIST GOODS_FILE_COMMENTS;
 
 void readAllGoodsFromFile() {
     FILE *fp = fopen(GOODS_BIN_PATH, "r");
@@ -9,6 +10,7 @@ void readAllGoodsFromFile() {
         printf("× 商品文件不存在！\n\n");
         return;
     }
+    GOODS_FILE_COMMENTS = list_create();
 
     Linker *head = list_create();
     Linker *node = head;
@@ -17,9 +19,15 @@ void readAllGoodsFromFile() {
     while (fgets(buf, sizeof(buf), fp) != NULL) {
         // 计算长度
         size_t len = strlen(buf);
-        if (len == 0 || buf[0] == '#') continue;
-
+        if (len == 0) continue;
         fixReturnNewline(buf, len);
+
+        if (buf[0] == '#') {
+            char *cpBuf = calloc(len + 1, sizeof(char));
+            strcpy(cpBuf, buf);
+            list_add(GOODS_FILE_COMMENTS, cpBuf);
+            continue;
+        }
 
         // 读取数据
         // s_02_002 2 饼干 987 18
@@ -37,6 +45,20 @@ void readAllGoodsFromFile() {
     GOODS_LIST = head;
 
     fclose(fp);
+}
+
+void writeAllGoodsToFile() {
+    FILE *fp = fopen(GOODS_BIN_PATH, "w");
+
+    FOREACH(GOODS_FILE_COMMENTS, char *, msg, {
+        fputs(msg, fp);
+        fputs("\n", fp);
+    })
+
+    // 商品编号,所属类别编号,商品名称,库存量,单价
+    FOREACH(GOODS_LIST, Goods *, g, {
+        fprintf(fp, "%s %d %s %d %f\n", g->id, g->category, g->name, g->stock, g->price);
+    })
 }
 
 Goods* findGoodsByID(const char* id) {

@@ -28,6 +28,8 @@ extern LIST ORDER_LIST;
  */
 extern int NEXT_ORDER_ID;
 
+extern LIST ORDER_FILE_COMMENTS;
+
 /**
  * 从文件中读入订单，并存储到 {@var ALL_ORDERS}
  */

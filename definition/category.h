@@ -21,7 +21,7 @@ typedef struct MarketCategory {
 /**
  * 存储类别信息的链表
  */
-LIST CATEGORY_LIST;
+extern LIST CATEGORY_LIST;
 
 /**
  * 从文件中读入类别信息到 {@see CATEGORY_LIST}

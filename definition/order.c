@@ -3,6 +3,7 @@
 
 LIST ORDER_LIST;
 int NEXT_ORDER_ID = 1;
+LIST ORDER_FILE_COMMENTS;
 
 void readAllOrdersFromFile() {
     FILE *fp = fopen(ORDER_BIN_PATH, "r");
@@ -12,6 +13,8 @@ void readAllOrdersFromFile() {
         return;
     }
 
+    ORDER_FILE_COMMENTS = list_create();
+
     Linker *head = list_create();
     Linker *node = head;
 
@@ -19,9 +22,15 @@ void readAllOrdersFromFile() {
     while (fgets(buf, sizeof(buf), fp) != NULL) {
         // 计算长度
         size_t len = strlen(buf);
-        if (len == 0 || buf[0] == '#') continue;
-
+        if (len == 0) continue;
         fixReturnNewline(buf, len);
+
+        if (buf[0] == '#') {
+            char *cpBuf = calloc(len + 1, sizeof(char));
+            strcpy(cpBuf, buf);
+            list_add(ORDER_FILE_COMMENTS, cpBuf);
+            continue;
+        }
 
         // 读取数据
         Order *p = malloc(sizeof(Order));
@@ -46,6 +55,19 @@ void readAllOrdersFromFile() {
     ORDER_LIST = head;
 
     fclose(fp);
+}
+
+void writeAllOrdersToFile() {
+    FILE *fp = fopen(ORDER_BIN_PATH, "w");
+
+    FOREACH(ORDER_FILE_COMMENTS, char *, msg, {
+        fputs(msg, fp);
+        fputs("\n", fp);
+    })
+
+    FOREACH(ORDER_LIST, Order *, order, {
+        fprintf(fp, "%04d %s %d %f %f\n", order->id, order->goods_id, order->count, order->price, order->total);
+    })
 }
 
 void printOrder(Order *order) {

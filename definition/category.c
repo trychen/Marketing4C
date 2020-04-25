@@ -1,5 +1,8 @@
 #include "category.h"
 
+LIST CATEGORY_LIST;
+LIST CATEGORY_FILE_COMMENTS;
+
 char * getCategoryDisplayNameByID(int id) {
     FOREACH(CATEGORY_LIST, Category*, cg, {
         if (cg->id == id) return cg->name;
@@ -7,9 +10,6 @@ char * getCategoryDisplayNameByID(int id) {
 
     return CATEGORY_NOT_DEFINED_DISPLAY_NAME;
 }
-
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "cert-err34-c"
 
 void readAllCategoryFromFile() {
     FILE *fp = fopen(CATEGORY_BIN_PATH, "r");
@@ -19,6 +19,8 @@ void readAllCategoryFromFile() {
         return;
     }
 
+    CATEGORY_FILE_COMMENTS = list_create();
+
     Linker *head = list_create();
     Linker *node = head;
 
@@ -27,7 +29,6 @@ void readAllCategoryFromFile() {
         // 计算长度
         size_t len = strlen(buf);
         if (len == 0 || buf[0] == '#') continue;
-
         fixReturnNewline(buf, len);
 
         // 读取数据
@@ -52,5 +53,3 @@ void printAllCategory() {
         printf("| %d\t%s\n", c->id, c->name);
     })
 }
-
-#pragma clang diagnostic pop

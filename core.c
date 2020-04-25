@@ -8,28 +8,23 @@ void fixReturnNewline(char c[], int len) {
     }
 }
 
-void list_add(LIST head, void* entry) {
-    if (head->entry == NULL) {
-        head->entry = entry;
-    } else {
-        LIST end;
-
-        while (head != NULL) {
-            end = head;
-            head = head->next;
-        }
-
-        LIST next = malloc(sizeof(Linker));
-        next->entry = entry;
-        next->next = NULL;
-
-        end->next = next;
+void list_add(LIST head, void *entry) {
+    LIST end;
+    while (head != NULL) {
+        end = head;
+        head = head->next;
     }
+
+    LIST next = list_create();
+    next->entry = entry;
+    next->next = NULL;
+
+    end->next = next;
 }
 
 bool list_delete(LIST head, void *entry) {
     LIST previous = head;
-    while(head != NULL) {
+    while (head != NULL) {
         if (head->entry == entry) {
             previous->next = head->next;
             free(head);
@@ -49,7 +44,7 @@ int list_size(LIST head) {
 }
 
 void list_free(LIST head) {
-    while(head != NULL) {
+    while (head != NULL) {
         free(head);
         head = head->next;
     }
@@ -61,11 +56,11 @@ LIST list_create() {
     return list;
 }
 
-LIST list_folkInOrder(LIST head, bool (*order)(void*, void*)) {
+LIST list_folkInOrder(LIST head, bool (*order)(void *, void *)) {
     LIST sorted = list_create();
 
     FOREACH(head, void*, current, {
-        Linker* add = list_create();
+        Linker *add = list_create();
         add->entry = current;
 
         if (sorted->next == NULL) {

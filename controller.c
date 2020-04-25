@@ -25,7 +25,7 @@ void help() {
     printf("☱☱☱☱☱☱☱☱☱☱☱☱☱☱☱☱☱☱☱☱\n\n");
 }
 
-void command() {
+bool command() {
     printf("↳ 请输入命令：");
 
     char input[1];
@@ -37,7 +37,7 @@ void command() {
 
     if (id == 0) {
         printf("▧ 已退出 ➭ 感谢您使用 ➭ 商品销售系统 V1.0\n");
-        exit(0);
+        return false;
     } else if (id == 1) {
         printAllGoodsInIDOrder();
     } else if (id == 2) {
@@ -47,7 +47,7 @@ void command() {
     } else if (id == 4) {
         commandPrintOrderInCategory();
     } else if (id == 5) {
-        commandPrintGoodsInSalesOrder();
+        commandPrintAllGoods();
     } else if (id == 6) {
         commandPrintGoodsInSalesOrder();
     } else if (id == 7) {
@@ -55,8 +55,16 @@ void command() {
     } else if (id == 8) {
         commandResetPassword();
     } else help();
+    return true;
 }
 
+void commandPrintAllGoods() {
+    printf("\n◉\t%s\t%s\t%s\t%s\t%s\n", "商品编号", "商品名称", "销售数量", "单价", "总金额");
+
+    FOREACH(GOODS_LIST, Goods *, g,{
+        printf("↳\t%s\t%s\t%d\t%.2f\t%.2f\n", g->id, g->name, g->sales, g->price, g->price * ((float) g->sales));
+    })
+}
 
 /**
  * 比较销量
@@ -73,7 +81,7 @@ void commandPrintGoodsInSalesOrder() {
         Goods *g = sortedHead->entry;
 
         // 商品编号、商品名称、销售数量、单价、总金额
-        printf("↳\t%s\t%s\t%d\t%f\t%f\n", g->id, g->name, g->sales, g->price, g->price * ((float) g->sales));
+        printf("↳\t%s\t%s\t%d\t%.2f\t%.2f\n", g->id, g->name, g->sales, g->price, g->price * ((float) g->sales));
 
         sortedHead = sortedHead->next;
     }

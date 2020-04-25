@@ -29,8 +29,11 @@ int main() {
 
     // 开始执行命令循环
     LOOP {
-        command();
+        if (!command()) break;
     }
+
+    writeAllGoodsToFile();
+    writeAllOrdersToFile();
 
     return 0;
 }

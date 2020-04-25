@@ -20,7 +20,7 @@ void help();
 /**
  * 处理命令，仅处理一条
  */
-void command();
+bool command();
 
 /**
  * 按商品销售量排序
@@ -28,9 +28,9 @@ void command();
 void commandPrintGoodsInSalesOrder();
 
 /**
- * 销售商品
+ * 输出所有商品
  */
-void commandSell();
+void commandPrintAllGoods();
 
 /**
  * 按照类别输出订单信息
