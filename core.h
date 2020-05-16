@@ -1,3 +1,8 @@
+//
+// 通用的接口
+// Created by 陈志林 on 2020/3/13.
+//
+
 #ifndef MARKETING4C_CORE_H
 #define MARKETING4C_CORE_H
 
@@ -22,7 +27,7 @@
  * @param c 要处理的字符串
  * @param len 字符串长度
  */
-void fixReturnNewline(char c[], int len);
+int fixReturnNewline(char c[], int len);
 
 /**
  * 单向链表
@@ -34,31 +39,53 @@ typedef struct linker {
 
 typedef Linker* LIST;
 
+/**
+ * 往链表尾部添加元素
+ */
 void list_add(LIST head, void *entry);
-bool list_delete(LIST head, void *entry);
+
+/**
+ * 获取链表的长度
+ */
 int list_size(LIST head);
+
+/**
+ * 释放链表（不会释放里面的元素）
+ */
 void list_free(LIST head);
+
+/**
+ * 创建一个链表节点
+ */
 LIST list_create();
 
 /**
  * 链表的插入排序
+ *
  * @param order 用于对比的函数指针，返回 true 表示两个元素已按先后顺序排好
  */
 LIST list_folkInOrder(Linker *head, bool (*order)(void*, void*));
 
-/* 用于链表的循环 */
-#define FOREACH(LIST_HEAD, TYPE, VAR, BODY) {LIST __FOREACH__ELEMENT__ = LIST_HEAD->next; \
+/**
+ * 用于链表的循环
+ * @param TYPE 元素类型
+ * @param VAR 变量名称
+ * @param BODY 方法体
+ */
+#define FOREACH(LIST_HEAD, TYPE, VAR, BODY) {LIST __FOREACH__ELEMENT__ = LIST_HEAD; \
 while(__FOREACH__ELEMENT__ != NULL) { \
+__FOREACH__ELEMENT__ = __FOREACH__ELEMENT__->next; \
+if (__FOREACH__ELEMENT__ == NULL) break; \
 TYPE VAR = __FOREACH__ELEMENT__->entry; \
 BODY; \
-__FOREACH__ELEMENT__ = __FOREACH__ELEMENT__->next; \
 }}
 
 /**
  * 删除链表中的数据
+ *
  * @param TYPE 元素类型
  * @param VAR 变量名
- * @param COMPARE 对比表达式，返回 true 既删除
+ * @param COMPARE 对比表达式，REMOVE = true 既删除
  */
 #define REMOVE_IF(LIST_HEAD, TYPE, VAR, COMPARE) {LIST __REMOVEIF__ELEMENT__ = LIST_HEAD->next; \
 LIST __REMOVEIF__PREVIOUS__ = LIST_HEAD; \

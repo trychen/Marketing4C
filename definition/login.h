@@ -1,3 +1,8 @@
+//
+// 密码的获取、登录认证、修改密码
+// Created by 陈光富 on 2020/4/2.
+//
+
 #ifndef MARKETING4C_LOGIN_H
 #define MARKETING4C_LOGIN_H
 

@@ -1,11 +1,13 @@
 #include "core.h"
 
-void fixReturnNewline(char c[], int len) {
-    if (len == 0) return;
+int fixReturnNewline(char c[], int len) {
+    if (len == 0) return 0;
     len--;
     while (c[len] == '\r' || c[len] == '\n') {
-        c[--len] = '\0';
+        c[len--] = '\0';
     }
+
+    return len + 1;
 }
 
 void list_add(LIST head, void *entry) {
@@ -44,9 +46,11 @@ int list_size(LIST head) {
 }
 
 void list_free(LIST head) {
+    Linker* temp;
     while (head != NULL) {
-        free(head);
+        temp = head;
         head = head->next;
+        free(temp);
     }
 }
 

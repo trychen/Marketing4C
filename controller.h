@@ -1,6 +1,6 @@
 //
 // 该文件用于控制主要的业务流程
-// Created by 陈志林 on 2020/3/13.
+// Created by 陈志林 & 任昊青 on 2020/3/13.
 //
 
 #ifndef MARKETING4C_CONTROLLER_H

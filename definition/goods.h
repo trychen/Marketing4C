@@ -1,3 +1,8 @@
+//
+// 商品的定义、加载、存储、排序、输出
+// Created by 任昊青 on 2020/4/12.
+//
+
 #ifndef MARKETING4C_GOODS_H
 #define MARKETING4C_GOODS_H
 

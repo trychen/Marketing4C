@@ -1,3 +1,8 @@
+//
+// 该文件用于控制主要的业务流程
+// Created by 陈志林 on 2020/3/13.
+//
+
 #include <stdio.h>
 
 #include "controller.h"
@@ -28,7 +33,7 @@ int main() {
     help();
 
     // 开始执行命令循环
-    LOOP {
+    for(;;) {
         if (!command()) break;
     }
 

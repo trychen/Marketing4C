@@ -1,4 +1,7 @@
-
+//
+// 订单的定义、加载、存储、排序、输出以及购买商品、删除订单的逻辑
+// Created by 黄承汇 on 2020/4/12.
+//
 #ifndef MARKETING4C_ORDER_H
 #define MARKETING4C_ORDER_H
 

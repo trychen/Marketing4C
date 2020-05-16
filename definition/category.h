@@ -1,3 +1,8 @@
+//
+// 类别的定义、加载
+// Created by 陈光富 on 2020/4/2.
+//
+
 #ifndef MARKETING4C_CATEGORY_H
 #define MARKETING4C_CATEGORY_H
 

@@ -13,20 +13,29 @@ void readAllOrdersFromFile() {
         return;
     }
 
+    // 创建用于存储注释的链表
     ORDER_FILE_COMMENTS = list_create();
 
+    // 创建用于存储类别的链表
     Linker *head = list_create();
+
+    // 最后一个节点，用于尾插法
     Linker *node = head;
 
+    // 读取缓存
     char buf[128];
+    // 逐行读入
     while (fgets(buf, sizeof(buf), fp) != NULL) {
         // 计算长度
         size_t len = strlen(buf);
+
+        // 删除数据尾部的 \r\n
+        len = fixReturnNewline(buf, len);
+
         if (len == 0) continue;
-        fixReturnNewline(buf, len);
 
         if (buf[0] == '#') {
-            char *cpBuf = calloc(len + 1, sizeof(char));
+            char *cpBuf = calloc(len, sizeof(char));
             strcpy(cpBuf, buf);
             list_add(ORDER_FILE_COMMENTS, cpBuf);
             continue;
@@ -37,9 +46,10 @@ void readAllOrdersFromFile() {
         sscanf(buf, "%d %s %d %f %f", &p->id, p->goods_id, &p->count, &p->price, &p->total);
 
         Goods *goods = findGoodsByID(p->goods_id);
-        if (goods == NULL) continue;
-        p->goods = goods;
-        p->goods->sales += p->count;
+        if (goods != NULL) {
+            p->goods = goods;
+            p->goods->sales += p->count;
+        }
 
         if (p->id > NEXT_ORDER_ID) {
             NEXT_ORDER_ID = p->id + 1;
@@ -61,6 +71,7 @@ void writeAllOrdersToFile() {
     FILE *fp = fopen(ORDER_BIN_PATH, "w");
 
     FOREACH(ORDER_FILE_COMMENTS, char *, msg, {
+        // 写入注释
         fputs(msg, fp);
         fputs("\n", fp);
     })
@@ -71,11 +82,11 @@ void writeAllOrdersToFile() {
 }
 
 void printOrder(Order *order) {
-    printf("| %04d\t%s\t%d\t%.2f\n", order->id, order->goods->name, order->count, order->total);
+    printf("| %04d\t%8s\t%8d\t%8.2f\n", order->id, order->goods->name, order->count, order->total);
 }
 
 void commandDeleteOrder() {
-    printf("◉ 订单编号\t商品\t数量\t总价\n");
+    printf("◉ 订单编号  商品  数量  总价\n");
     FOREACH(ORDER_LIST, Order *, o, {
         printOrder(o);
     })
@@ -88,6 +99,8 @@ void commandDeleteOrder() {
 
     REMOVE_IF(ORDER_LIST, Order *, order, {
         if (order->id == id) {
+            order->goods->sales -= order->count;
+            order->goods->stock += order->count;
             deleted = true;
             free(order);
             REMOVE = true;
@@ -103,18 +116,17 @@ void commandDeleteOrder() {
 
 
 void commandSell() {
-    // 创建订单
+    // 创建订单列表
     LIST orders = list_create();
 
     // 循环
-    LOOP {
+    for(;;) {
+        // 输出所有类别
         printAllCategory();
         printf("↳ 请输入你要购买的商品类别：");
 
         int category_id;
         scanf("%d", &category_id);
-
-        printf("\n");
 
         // 输入 -1 结束
         if (category_id == -1) {
@@ -122,15 +134,13 @@ void commandSell() {
             return;
         }
 
-        printf("◉ 该类别下所有商品如下:\n\n");
-
         // 输出所有商品信息
         FOREACH(GOODS_LIST, Goods *, g, {
-            if (g->category == category_id) printf("  %s\t%s\n", g->id, g->name);
+            if (g->category == category_id) printf("| %s\t%s\n", g->id, g->name);
         })
 
         char goods_id[20];
-        printf("↳ 请输入购买的商品（输入 -1 重新选择类别）：");
+        printf("↳ 请输入购买的商品（输入 -1 重新选择）：");
         scanf("%s", goods_id);
 
         if (strcmp(goods_id, "-1") == 0) {
@@ -156,18 +166,17 @@ void commandSell() {
         goods->sales += count; //更新销售量
 
         Order *order = malloc(sizeof(Order));
-        order->id = NEXT_ORDER_ID++;
         order->count = count; //记录下购买的数量
         order->price = goods->price; //记录下所购买商品的单价
         order->total = goods->price * count; //记录下购买该商品所花费的总额
 
         //记录下所购买的商品
         strcpy(order->goods_id, goods->id);
-        strcpy(order->goods->name, goods->name);
+        order->goods = goods;
 
         list_add(orders, order);
 
-        printf("\n◉ 购买 %s 成功！\n", goods->name);
+        printf("\n◉ 购买 %s 成功！\n\n", goods->name);
 
         printf("↳ 输入 1 以继续购买，输入 -1 结束购买:");
 
@@ -178,14 +187,18 @@ void commandSell() {
     }
 
     if (list_size(orders) != 0) {
-        printf("\n您成功购买的商品如下:\n");//
+        printf("\n您成功购买的商品如下:\n\n");
+        printf("订单编号：%04d\n", NEXT_ORDER_ID);
         printf("商品名称\t购买数量\t商品单价\t所花费金额\n"); //输出所购买的商品的信息
         printf("-------------------------------------------------------------------\n");
 
         FOREACH(orders, Order *, order, {
             printf("%s\t\t%d\t\t%.2f\t\t%.2f\n", order->goods->name, order->count, order->price, order->total);
-            orders = orders->next;
+            order->id = NEXT_ORDER_ID;
+            list_add(ORDER_LIST, order);
         })
+
+        NEXT_ORDER_ID++;
 
         printf("-------------------------------------------------------------------\n\n");
     }
